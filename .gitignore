@@ -6,6 +6,7 @@ cmake_install.cmake
 Makefile
 
 # 编译输出
+*.dll
 *.o
 *.obj
 *.a

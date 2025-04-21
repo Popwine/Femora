@@ -4,6 +4,8 @@
 #include <cassert>
 #include <stdexcept>
 
+namespace Femora{
+
 
 
 template<typename T>
@@ -101,5 +103,5 @@ std::ostream& operator<<(std::ostream& os, const vector2d<T>& vec){
     os << "(" << vec.x << ", " << vec.y << ")";
     return os;
 }
-
+}
 #endif // VECTOR2D_H

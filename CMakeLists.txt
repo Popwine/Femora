@@ -1,18 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(fem_sim)
-
-include_directories(${PROJECT_SOURCE_DIR}/include)
+project(Femora)
 
 set(CMAKE_CXX_STANDARD 17)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
-file(GLOB_RECURSE SRC_FILES "${PROJECT_SOURCE_DIR}/src/*.cpp")
+set(MATHCORE_SRC src/vector2d.cpp)
+set(GMSH_READER_SRC src/gmsh_reader.cpp)
+set(MAIN_SRC src/femora.cpp)
 
-add_library(mathcore STATIC ${PROJECT_SOURCE_DIR}/src/vector2d.cpp)
+add_library(mathcore ${MATHCORE_SRC})
+add_library(gmshreader ${GMSH_READER_SRC})
 
 target_include_directories(mathcore PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(gmshreader PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-add_executable(fem_sim ${SRC_FILES})
+add_executable(femora ${MAIN_SRC})
 
+target_link_libraries(femora mathcore gmshreader)

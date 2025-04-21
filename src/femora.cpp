@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main(){
-    vector2d<double> v1(1,2), v2(4.5, 7.7), v3;
+    Femora::vector2d<double> v1(1,2), v2(4.5, 7.7), v3;
     std::cout << v1 + v2 << std::endl;
     std::cout << v1 + v3 << std::endl;
     std::cout << v1 * v2 << std::endl;
