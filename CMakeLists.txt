@@ -6,6 +6,12 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_compile_options(-Wall -Wextra -Wpedantic)
 
+option(USE_DOUBLE_PRECISION "Use double instead of float for real numbers" ON)
+
+if (USE_DOUBLE_PRECISION)
+    add_compile_definitions(USE_DOUBLE_PRECISION)
+endif()
+
 set(MATHCORE_SRC src/vector2d.cpp)
 set(GMSH_READER_SRC src/gmsh_reader.cpp)
 set(MAIN_SRC src/femora.cpp)

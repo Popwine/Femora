@@ -4,7 +4,7 @@ mkdir build
 
 Set-Location  build
 
-cmake .. -G "MinGW Makefiles"
+cmake .. -G "MinGW Makefiles" -DUSE_DOUBLE_PRECISION=ON
 
 mingw32-make
 

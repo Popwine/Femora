@@ -1,6 +1,6 @@
 #include "vector2d.h"
 
 
-namespace{
+namespace Femora{
     
 }
