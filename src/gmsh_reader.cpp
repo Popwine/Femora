@@ -23,9 +23,11 @@ bool Femora::GmeshReader::load(const std::string& fileName, Mesh& mesh){
         }
     }
 
-    //开始读取点
+    
+    mesh.reserveVertices(nodeNum);//预先分配内存
     int number;
     real nodeX, nodeY;
+    //开始读取点
     for(int i = 0; i < nodeNum; i++){
         std::getline(inGmsh, line);
         std::istringstream iss(line);

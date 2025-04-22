@@ -16,5 +16,10 @@ void Mesh::printVertices(){
 int Mesh::getNodeNumberByVectorIndex(size_t index){
     return NodeNumberByVectorIndex[index];
 }
+void Mesh::reserveVertices(size_t nodeNum){
+    vertices.reserve(nodeNum);
+    NodeNumberByVectorIndex.reserve(nodeNum);
+}
+
 
 }

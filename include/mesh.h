@@ -15,6 +15,7 @@ private:
 
 public:
     void addVertex(int number, real x, real y);
+    void reserveVertices(size_t number);
     void printVertices();
     int getNodeNumberByVectorIndex(size_t index);
 
