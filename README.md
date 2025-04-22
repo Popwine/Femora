@@ -71,9 +71,9 @@ Femora/
 
 - **Mesh 类**
 
-  - `addVertex(x, y)`：添加节点
+  - `addNode(x, y)`：添加节点
   - `addElement({i0, i1, ...}, type)`：添加单元
-  - `getNumVertices()`、`getNumElements()`：获取尺寸
+  - `getNumNodes()`、`getNumElements()`：获取尺寸
   - `clear()`：重置 Mesh
 
 - **GmshReader 类**

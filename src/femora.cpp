@@ -8,8 +8,10 @@ int main(){
     Femora::Mesh mesh;
     Femora::GmeshReader reader;
     reader.load("gmsh_files/rect_3x4.msh", mesh);
-    mesh.printVertices();
+    mesh.printNodes();
 
+    mesh.printPhysicalNames();
+    mesh.printElements();
     std::cout << "Femora is exiting." << std::endl;
     return 0;
 }
