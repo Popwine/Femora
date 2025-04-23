@@ -28,7 +28,12 @@ struct Element{
     int id;
     int type;
     int tagNum;
+    //tags内容：
+    //第一个：物理组tag，
+    //第二个：生成来源：生成时来源于哪个边/面，暂时没用
+    
     std::vector<int> tags;
+    
     std::vector<int> nodesList;
     Element(
         const int i,
@@ -48,6 +53,7 @@ class Mesh{
 private:
     std::vector<vector2d<real>> nodes;
     //NodeNumberByVectorIndex的索引是Nodes的索引,值代表gmsh中的序号
+    //统一语言：Number代表gmsh里的序号，Index代表vector的索引
     std::vector<int> nodeNumberByVectorIndex;
 
     std::vector<PhysicalName> physicalNames;
@@ -73,6 +79,16 @@ void reserveObject(MeshReverse target, size_t number);
         const std::vector<int>& inNodesList
     );
     void printElements();
+
+    //根据物理标签获取单元的ID。
+    std::vector<int> getElementIdsByPhysicalTag(int tag);
+    //根据物理标签获取单元vector的索引。
+    std::vector<size_t> getElementIndexesByPhysicalTag(int tag);
+
+    Element getElementByIndex(size_t index){
+        return elements[index];
+    }
+    
     
     
 

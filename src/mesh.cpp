@@ -71,6 +71,29 @@ void Mesh::addElement(
     const std::vector<int>& inNodesList
 ){
     elements.emplace_back(i, tp, tgnm, inTag, inNodesList);
+
+}
+
+std::vector<int> Mesh::getElementIdsByPhysicalTag(int tag){
+    std::vector<int> elementIds;
+    for(const auto& e : elements){
+        if(e.tags.size() > 0 && e.tags[0] == tag){
+            elementIds.push_back(e.id);
+        }
+    }
+    return elementIds;
+
+
+}
+
+std::vector<size_t> Mesh::getElementIndexesByPhysicalTag(int tag){
+    std::vector<size_t> elementIndexes;
+    for(size_t i = 0; i < elements.size(); i++){
+        if(elements[i].tags.size() > 0 && elements[i].tags[0]== tag){
+            elementIndexes.push_back(i);
+        }
+    }
+    return elementIndexes;
 }
 
 

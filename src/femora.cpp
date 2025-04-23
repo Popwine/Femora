@@ -12,6 +12,18 @@ int main(){
 
     mesh.printPhysicalNames();
     mesh.printElements();
+    std::vector<int> findedElementNumber;
+    findedElementNumber = mesh.getElementIdsByPhysicalTag(5);
+    for(const auto& n : findedElementNumber){
+        std::cout << n << " ";
+    }
+    std::cout << std::endl;
+    std::vector<size_t> findedElementIndexes;
+    findedElementIndexes = mesh.getElementIndexesByPhysicalTag(5);
+    for(const auto& n : findedElementIndexes){
+        std::cout << mesh.getElementByIndex(n).id << " ";
+    }
+    std::cout << std::endl;
     std::cout << "Femora is exiting." << std::endl;
     return 0;
 }
