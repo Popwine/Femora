@@ -12,7 +12,9 @@ class GmeshReader{
 public:
     bool load(const std::string& fileName, Mesh& mesh);
 private:
-    
+    void parsePhysicalNames(std::ifstream& inGmsh, Mesh& mesh);
+    void parseNodes(std::ifstream& inGmsh, Mesh& mesh);
+    void parseElements(std::ifstream& inGmsh, Mesh& mesh);
 
 };
 

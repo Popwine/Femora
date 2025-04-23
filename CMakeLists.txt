@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.10) 
 
 project(Femora)
 
@@ -27,5 +27,10 @@ target_include_directories(gmshreader PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 add_executable(femora ${MAIN_SRC})
 
+
 target_link_libraries(gmshreader mesh)
 target_link_libraries(femora mesh mathcore gmshreader)
+
+
+target_include_directories(femora PUBLIC ${PROJECT_SOURCE_DIR}/include)
+
