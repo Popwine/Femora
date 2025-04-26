@@ -4,6 +4,7 @@
 #include <string>
 #include "vector2d.h"
 #include "config.h"
+#include <unordered_map>
 namespace Femora{
 
 enum MeshReverse{
@@ -16,6 +17,7 @@ struct PhysicalName{
 
 
     int dimension;
+    //PhysicalName的tag其实就是编号
     int tag;
     std::string name; 
     //emplace_back对于结构体，要在有构造函数的情况下才能使用。
@@ -60,6 +62,8 @@ private:
 
     std::vector<Element> elements;
 
+    std::unordered_map<int, std::vector<size_t>> physTag2ElemIndex;
+
 
 
 public:
@@ -83,13 +87,13 @@ void reserveObject(MeshReverse target, size_t number);
     //根据物理标签获取单元的ID。
     std::vector<int> getElementIdsByPhysicalTag(int tag);
     //根据物理标签获取单元vector的索引。
-    std::vector<size_t> getElementIndexesByPhysicalTag(int tag);
+    const std::vector<size_t>& getElementIndexesByPhysicalTag(int tag);
 
     Element getElementByIndex(size_t index){
         return elements[index];
     }
     
-    
+    size_t getNumElements() const;
     
 
 

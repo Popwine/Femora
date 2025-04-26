@@ -71,7 +71,8 @@ void Mesh::addElement(
     const std::vector<int>& inNodesList
 ){
     elements.emplace_back(i, tp, tgnm, inTag, inNodesList);
-
+    //inTag[0]读取的tags中第一个代表物理组标签
+    physTag2ElemIndex[inTag[0]].push_back(elements.size() - 1);
 }
 
 std::vector<int> Mesh::getElementIdsByPhysicalTag(int tag){
@@ -86,14 +87,21 @@ std::vector<int> Mesh::getElementIdsByPhysicalTag(int tag){
 
 }
 
-std::vector<size_t> Mesh::getElementIndexesByPhysicalTag(int tag){
-    std::vector<size_t> elementIndexes;
-    for(size_t i = 0; i < elements.size(); i++){
-        if(elements[i].tags.size() > 0 && elements[i].tags[0]== tag){
-            elementIndexes.push_back(i);
-        }
-    }
-    return elementIndexes;
+const std::vector<size_t>& Mesh::getElementIndexesByPhysicalTag(int tag){
+    // std::vector<size_t> elementIndexes;
+    // for(size_t i = 0; i < elements.size(); i++){
+    //     if(elements[i].tags.size() > 0 && elements[i].tags[0]== tag){
+    //         elementIndexes.push_back(i);
+    //     }
+    // }
+
+
+    return physTag2ElemIndex[tag];
+}
+
+
+size_t Mesh::getNumElements()const{
+    return elements.size();
 }
 
 
