@@ -19,11 +19,13 @@ int main(){
         std::cout << n << " ";
     }
     std::cout << std::endl;
+
     const std::vector<size_t>& findedElementIndexes = mesh.getElementIndexesByPhysicalTag(5);
     for(const auto& n : findedElementIndexes){
         std::cout << mesh.getElementByIndex(n).id << " ";
     }
     std::cout << std::endl;
+    
     Femora::Field<real> speed_x(mesh);
     real v1 = 5.5;
     real v2 = 3.1;
