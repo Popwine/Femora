@@ -13,13 +13,13 @@ private:
     const Mesh& mesh;
     std::vector<DataType> data_;
 public:
-    void initialize(DataType& value);
+    void initialize(const DataType& value);
     explicit Field(const Mesh& m);
-    Field(const Mesh& m, DataType value);
+    Field(const Mesh& m, const DataType& value);
     ~Field();
     void Clear();
-    void setValue(size_t Idx, DataType value);
-    DataType getValue(size_t Idx) const;
+    void setValue(const size_t Idx, const DataType& value);
+    const DataType& getValue(const size_t Idx) const;
 
 
 
@@ -28,11 +28,11 @@ public:
 template<typename DataType>
 Field<DataType>::Field(const Mesh& m) : mesh(m)
 {
-    
+    data_.resize(mesh.getNumElements());
 }
 
 template<typename DataType>
-Field<DataType>::Field(const Mesh& m, DataType value) : mesh(m)
+Field<DataType>::Field(const Mesh& m, const DataType& value) : mesh(m)
 {
     initialize(value);
 }
@@ -43,7 +43,7 @@ Field<DataType>::~Field()
 }
 
 template<typename DataType>
-void Field<DataType>::initialize(DataType& value){
+void Field<DataType>::initialize(const DataType& value){
     
     data_.assign(mesh.getNumElements(), value);
 
@@ -56,20 +56,26 @@ void Field<DataType>::Clear()
 }
 
 template<typename DataType>
-void Field<DataType>::setValue(size_t Idx, DataType value)
+void Field<DataType>::setValue(const size_t Idx, const DataType& value)
 {
     if(Idx < data_.size() ){
         data_[Idx] = value;
     }
     else{
-        throw std::runtime_error("Index out of range.");
+        throw std::runtime_error("Index " + std::to_string(Idx) + " out of range.");
     }
     
 }
 
 template<typename DataType>
-DataType Field<DataType>::getValue(size_t Idx)const{
-    return data_[Idx];
+const DataType& Field<DataType>::getValue(const size_t Idx)const{
+    if(Idx < data_.size() ){
+        return data_[Idx];
+    }
+    else{
+        throw std::runtime_error("Index " + std::to_string(Idx) + " out of range.");
+    }
+    
 }
 
 
