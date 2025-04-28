@@ -4,6 +4,107 @@
 #include "mesh.h"
 #include "gmsh_reader.h"
 #include "field.h"
+
+#include "matrix_csr.h"
+
+
+// 辅助函数：打印 vector
+template<typename T>
+void print_vector(const std::vector<T>& vec, const std::string& name = "Vector") {
+    std::cout << name << " (" << vec.size() << "): [ ";
+    for (const auto& val : vec) {
+        std::cout << val << " ";
+    }
+    std::cout << "]" << std::endl;
+}
+
+
+int testCsr(){
+        // --- 1. 手动创建一个已知的稀疏矩阵 A (CSR 格式) ---
+    // 假设我们要表示以下 4x4 矩阵 A:
+    //   [ 5  0 -1  0 ]
+    //   [ 0  2  0  3 ]
+    //   [-1  0  4  0 ]
+    //   [ 0  3  0  6 ]
+
+    Femora::SparseMatrixCSR A;
+    A.num_rows = 4;
+    A.num_cols = 4;
+
+    // 非零元素值 (按行优先)
+    A.values = { 5.0, -1.0,    // Row 0
+                 2.0,  3.0,    // Row 1
+                -1.0,  4.0,    // Row 2
+                 3.0,  6.0 };  // Row 3
+                 // 注意: 类型应为 real, 这里用 5.0 显式表示浮点数
+
+    // 非零元素对应的列索引
+    A.col_indices = { 0, 2,        // Row 0: A[0][0], A[0][2]
+                      1, 3,        // Row 1: A[1][1], A[1][3]
+                      0, 2,        // Row 2: A[2][0], A[2][2]
+                      1, 3 };      // Row 3: A[3][1], A[3][3]
+                      // 注意: 索引从 0 开始
+
+    // 行指针 (row_ptr[i] 是第 i 行第一个非零元在 values/col_indices 中的起始位置)
+    // 大小为 num_rows + 1
+    A.row_ptr = { 0,        // Row 0 starts at index 0
+                  2,        // Row 1 starts at index 2
+                  4,        // Row 2 starts at index 4
+                  6,        // Row 3 starts at index 6
+                  8 };      // End marker (total number of non-zero elements)
+
+    // --- 2. 创建一个已知的稠密向量 x ---
+    std::vector<real> x = {1.0, 2.0, 3.0, 4.0}; // 大小需等于 A.num_cols
+    print_vector(x, "Input vector x");
+
+    // --- (可选) 检查输入向量大小是否匹配 ---
+    assert(x.size() == A.num_cols && "Input vector x size must match matrix number of columns!");
+
+    // --- 3. 调用你的 spmv_csr 函数计算 y = Ax ---
+    std::vector<real> y;
+    try {
+        y = Femora::spmv_csr(A, x);
+    } catch (const std::exception& e) {
+        std::cerr << "Error during SpMV calculation: " << e.what() << std::endl;
+        return 1; // 异常退出
+    }
+
+    // --- (可选) 检查输出向量大小是否匹配 ---
+     assert(y.size() == A.num_rows && "Output vector y size must match matrix number of rows!");
+
+    // --- 4. 打印计算结果 y ---
+    print_vector(y, "Result vector y = Ax");
+
+    // --- 5. 手动计算正确结果进行对比 ---
+    // y[0] = A[0][0]*x[0] + A[0][2]*x[2] = 5*1 + (-1)*3 = 2
+    // y[1] = A[1][1]*x[1] + A[1][3]*x[3] = 2*2 + 3*4 = 16
+    // y[2] = A[2][0]*x[0] + A[2][2]*x[2] = (-1)*1 + 4*3 = 11
+    // y[3] = A[3][1]*x[1] + A[3][3]*x[3] = 3*2 + 6*4 = 30
+    std::vector<real> expected_y = {2.0, 16.0, 11.0, 30.0};
+    print_vector(expected_y, "Expected vector y");
+
+    // --- (可选) 简单比较结果 ---
+    bool match = true;
+    if (y.size() == expected_y.size()) {
+        for (size_t i = 0; i < y.size(); ++i) {
+            // 使用一个小的容差比较浮点数
+            if (std::abs(y[i] - expected_y[i]) > 1e-6) {
+                match = false;
+                break;
+            }
+        }
+    } else {
+        match = false;
+    }
+
+    if (match) {
+        std::cout << "Result matches expected value!" << std::endl;
+    } else {
+        std::cout << "Result does NOT match expected value!" << std::endl;
+    }
+
+    return 0;
+}
 int main(){
     std::cout << "Femora is running." << std::endl;
     Femora::Mesh mesh;
