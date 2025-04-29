@@ -143,7 +143,7 @@ int main(){
 
 
 
-
+    testCsr();
 
     std::cout << "Femora is exiting." << std::endl;
     return 0;
