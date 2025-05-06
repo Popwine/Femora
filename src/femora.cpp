@@ -18,6 +18,42 @@ void print_vector(const std::vector<T>& vec, const std::string& name = "Vector")
     std::cout << "]" << std::endl;
 }
 
+void test_mesh_and_field(){
+    Femora::Mesh mesh;
+    Femora::GmeshReader reader;
+    reader.load("gmsh_files/rect_3x4.msh", mesh);
+    mesh.printNodes();
+
+    mesh.printPhysicalNames();
+    mesh.printElements();
+    std::vector<int> findedElementNumber;
+    findedElementNumber = mesh.getElementIdsByPhysicalTag(5);
+    for(const auto& n : findedElementNumber){
+        std::cout << n << " ";
+    }
+    std::cout << std::endl;
+
+    const std::vector<size_t>& findedElementIndexes = mesh.getElementIndexesByPhysicalTag(5);
+    for(const auto& n : findedElementIndexes){
+        std::cout << mesh.getElementByIndex(n).id << " ";
+    }
+    std::cout << std::endl;
+    
+    Femora::Field<real> speed_x(mesh);
+    real v1 = 5.5;
+    real v2 = 3.1;
+    speed_x.initialize(v1);
+    
+    for(const auto& n : findedElementIndexes){
+        std::cout << speed_x.getValue(n) << std::endl;
+    }
+    speed_x.initialize(v2);
+
+    for(const auto& n : findedElementIndexes){
+        std::cout << speed_x.getValue(n) << std::endl;
+    }
+
+}
 
 int testCsr(){
         // --- 1. 手动创建一个已知的稀疏矩阵 A (CSR 格式) ---
@@ -105,45 +141,26 @@ int testCsr(){
 
     return 0;
 }
+
+void test_UniformField(){
+    Femora::UniformField<real> field(8,5,0.1,9.2);
+    
+    field.setValue(2,2,324.5);
+    field.setValue(3,1,23.5);
+    field.print();
+
+    auto partialX = field.partialDerivativeX();
+    partialX.print();
+
+}
 int main(){
     std::cout << "Femora is running." << std::endl;
-    Femora::Mesh mesh;
-    Femora::GmeshReader reader;
-    reader.load("gmsh_files/rect_3x4.msh", mesh);
-    mesh.printNodes();
-
-    mesh.printPhysicalNames();
-    mesh.printElements();
-    std::vector<int> findedElementNumber;
-    findedElementNumber = mesh.getElementIdsByPhysicalTag(5);
-    for(const auto& n : findedElementNumber){
-        std::cout << n << " ";
-    }
-    std::cout << std::endl;
-
-    const std::vector<size_t>& findedElementIndexes = mesh.getElementIndexesByPhysicalTag(5);
-    for(const auto& n : findedElementIndexes){
-        std::cout << mesh.getElementByIndex(n).id << " ";
-    }
-    std::cout << std::endl;
-    
-    Femora::Field<real> speed_x(mesh);
-    real v1 = 5.5;
-    real v2 = 3.1;
-    speed_x.initialize(v1);
-    
-    for(const auto& n : findedElementIndexes){
-        std::cout << speed_x.getValue(n) << std::endl;
-    }
-    speed_x.initialize(v2);
-
-    for(const auto& n : findedElementIndexes){
-        std::cout << speed_x.getValue(n) << std::endl;
-    }
 
 
+    //test_mesh_and_field();
+    //testCsr();
 
-    testCsr();
+    test_UniformField();
 
     std::cout << "Femora is exiting." << std::endl;
     return 0;
