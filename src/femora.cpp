@@ -143,14 +143,18 @@ int testCsr(){
 }
 
 void test_UniformField(){
-    Femora::UniformField<real> field(8,5,0.1,9.2);
+    Femora::UniformField<real> field(5,5,0.1,9.2);
     
-    field.setValue(2,2,324.5);
-    field.setValue(3,1,23.5);
+    field.setValue(2,2,7.5);
+    field.setValue(3,1,9.5);
+    field.setValue(1,4,9.23);
+    field.setValue(4,4,9.01);
+    field.setValue(1,2,9.36);
+    field.setValue(3,1,8.8);
     field.print();
 
-    auto partialX = field.partialDerivativeX();
-    partialX.print();
+    auto partialDerivativeX = field.laplace();
+    partialDerivativeX.print();
 
 }
 int main(){

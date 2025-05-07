@@ -102,6 +102,9 @@ public:
     void print();
     
     UniformField partialDerivativeX() const;
+    UniformField partialDerivativeY() const;
+    UniformField laplace() const;
+    
 };
 
 template<typename DataType>
@@ -148,6 +151,7 @@ void UniformField<DataType>::print(){
 }
 
 
+
 /**
  * @brief set all the value
  * @param Value specific value
@@ -162,16 +166,50 @@ void UniformField<DataType>::setValueAll(const DataType& Value){
 template<typename DataType>
 UniformField<DataType> UniformField<DataType>::partialDerivativeX() const{
     DataType defaultValue{};
-    //对于任意有减法运算符的类型，用此操作归零
+   
     UniformField<DataType> result(width_, height_, dx_, defaultValue);
     for(size_t i = 1; i < height_ - 1; i++){
         for(size_t j = 1; j < width_ - 1; j++){
-            //result[i][j] = (data_[i+1][j] - data_[i+1][j]) / (2.0 * dx_);
+            
             result.setValue(i, j, (data_[i][j+1] - data_[i][j-1]) / (2.0 * dx_));
+            
         }
     }
     return result;
 }
+
+template<typename DataType>
+UniformField<DataType> UniformField<DataType>::partialDerivativeY() const{
+    DataType defaultValue{};
+   
+    UniformField<DataType> result(width_, height_, dx_, defaultValue);
+    for(size_t i = 1; i < height_ - 1; i++){
+        for(size_t j = 1; j < width_ - 1; j++){
+            
+            result.setValue(i, j, (data_[i+1][j] - data_[i-1][j]) / (2.0 * dx_));
+        }
+    }
+    return result;
+}
+
+template<typename DataType>
+UniformField<DataType> UniformField<DataType>::laplace() const{
+    DataType defaultValue{};
+   
+    UniformField<DataType> result(width_, height_, dx_, defaultValue);
+    for(size_t i = 1; i < height_ - 1; i++){
+        for(size_t j = 1; j < width_ - 1; j++){
+            
+            result.setValue(i, j, (
+                data_[i+1][j] + data_[i-1][j] + data_[i][j+1] + data_[i][j-1]
+                - 4 * data_[i][j]
+            ) / (dx_ * dx_));
+        }
+    }
+    return result;
+}
+
+
 
 
 }
