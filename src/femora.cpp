@@ -156,6 +156,21 @@ void test_UniformField(){
     auto partialDerivativeX = field.laplace();
     partialDerivativeX.print();
 
+    Femora::vector2d<real> vec(1.2, 2.3);
+    Femora::UniformField<Femora::vector2d<real>> vectorField(5, 5, 0.1, vec);
+    vectorField.setValue(1,1,Femora::vector2d<real>(1.5,1.9));
+    vectorField.setValue(0,3,Femora::vector2d<real>(0.8,1.6));
+    vectorField.setValue(1,3,Femora::vector2d<real>(1.1,0.7));
+    vectorField.setValue(2,2,Femora::vector2d<real>(1.9,1.3));
+    vectorField.setValue(3,0,Femora::vector2d<real>(0.7,1.8));
+    vectorField.setValue(4,1,Femora::vector2d<real>(1.1,0.5));
+    vectorField.setValue(2,4,Femora::vector2d<real>(1.3,0.6));
+    vectorField.print();
+    auto divegence = Femora::divergence(vectorField);
+    divegence.print();
+
+
+
 }
 int main(){
     std::cout << "Femora is running." << std::endl;

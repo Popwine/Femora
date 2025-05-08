@@ -78,7 +78,7 @@ const DataType& Field<DataType>::getValue(const size_t Idx)const{
     
 }
 
-
+/*-----------------------UniformField-----------------------*/
 
 template<typename DataType>
 class UniformField{
@@ -89,17 +89,17 @@ private:
     real dx_;//正方形网格大小
     std::vector<std::vector<DataType>> data_;
 public:
-    size_t getWidth(){return width_;};
-    size_t getHeight(){return height_;};
-    real getDx(){return dx_;};
+    size_t getWidth() const{return width_;};
+    size_t getHeight() const{return height_;};
+    real getDx() const{return dx_;};
     UniformField(const size_t w, const size_t h, const real dx, const DataType& Value);
     
-    const DataType& getValue(size_t i, size_t j);
+    const DataType& getValue(size_t i, size_t j) const;
 
 
     void setValue(size_t i, size_t j, const DataType& Value);
     void setValueAll(const DataType& Value);
-    void print();
+    void print() const;
     
     UniformField partialDerivativeX() const;
     UniformField partialDerivativeY() const;
@@ -129,7 +129,7 @@ UniformField<DataType>::UniformField(
 
 }
 template<typename DataType>
-const DataType& UniformField<DataType>::getValue(size_t i, size_t j){
+const DataType& UniformField<DataType>::getValue(size_t i, size_t j) const{
     //get field value from indexes
     return data_[i][j];
 }
@@ -141,7 +141,7 @@ void UniformField<DataType>::setValue(size_t i, size_t j, const DataType& Value)
 }
 
 template<typename DataType>
-void UniformField<DataType>::print(){
+void UniformField<DataType>::print() const{
     for(const auto& row : data_){
         for(const auto& value : row){
             std::cout << value << " " ;
@@ -209,6 +209,28 @@ UniformField<DataType> UniformField<DataType>::laplace() const{
     return result;
 }
 
+UniformField<real> divergence(const UniformField<vector2d<real>>& vecField){
+    Femora::UniformField<real> result(
+        vecField.getWidth(), 
+        vecField.getHeight(), 
+        vecField.getDx(),
+        0);
+    
+        for(size_t i = 1; i < vecField.getHeight() - 1; i++){
+            for(size_t j = 1; j < vecField.getWidth() - 1; j++){
+                
+                result.setValue(i, j, (
+                    vecField.getValue(i+1, j).x - vecField.getValue(i-1, j).x +
+                    vecField.getValue(i, j+1).y - vecField.getValue(i, j-1).y
+                ) / (2.0 * vecField.getDx()));
+
+            }
+        }
+        return result;
+        
+
+
+}
 
 
 
