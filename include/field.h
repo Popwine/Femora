@@ -1,6 +1,6 @@
 #ifndef FIELD_H
 #define FIELD_H
-
+#include <cmath>
 #include "mesh.h"
 #include "config.h"
 #include "vector2d.h"
@@ -104,8 +104,12 @@ public:
     UniformField partialDerivativeX() const;
     UniformField partialDerivativeY() const;
     UniformField laplace() const;
+    UniformField<vector2d<DataType>> gradient() const;
+    DataType interpolateValue(real x, real y)const;
     
 };
+UniformField<real> divergence(const UniformField<vector2d<real>>& vecField);
+UniformField<real> curl_2d(const UniformField<vector2d<real>>& vecField);
 
 template<typename DataType>
 UniformField<DataType>::UniformField(
@@ -209,26 +213,45 @@ UniformField<DataType> UniformField<DataType>::laplace() const{
     return result;
 }
 
-UniformField<real> divergence(const UniformField<vector2d<real>>& vecField){
-    Femora::UniformField<real> result(
-        vecField.getWidth(), 
-        vecField.getHeight(), 
-        vecField.getDx(),
-        0);
-    
-        for(size_t i = 1; i < vecField.getHeight() - 1; i++){
-            for(size_t j = 1; j < vecField.getWidth() - 1; j++){
-                
-                result.setValue(i, j, (
-                    vecField.getValue(i+1, j).x - vecField.getValue(i-1, j).x +
-                    vecField.getValue(i, j+1).y - vecField.getValue(i, j-1).y
-                ) / (2.0 * vecField.getDx()));
 
-            }
+
+template<typename DataType>
+UniformField<vector2d<DataType>> UniformField<DataType>::gradient() const{
+    UniformField<vector2d<DataType>> result(width_, height_, dx_, vector2d<DataType>{});
+    for(size_t i = 1; i < height_ - 1; i++){
+        for(size_t j = 1; j < width_ - 1; j++){
+            
+            result.setValue(i, j, vector2d<DataType>(
+                (data_[i][j+1] - data_[i][j-1]) / (2.0 * dx_)
+                ,
+                (data_[i+1][j] - data_[i-1][j]) / (2.0 * dx_)
+            ));
+
         }
-        return result;
-        
+    }
 
+    return result;
+}
+
+
+template<typename DataType>
+DataType UniformField<DataType>::interpolateValue(real x, real y)const{
+    int i = std::floor(y / dx_);
+    int j = std::floor(x / dx_);
+    
+    if(i < 0 || j < 0 || i >= (int)(height_ - 1) || j >= (int)(width_ - 1)){
+        return DataType{};
+    }
+    else{
+        std::cout << data_[i][j] <<", " << data_[i+1][j] <<", " << data_[i][j+1] <<", " << data_[i+1][j+1] << std::endl;
+        DataType tx = (x - j * dx_) / dx_;
+        DataType ty = (y - i * dx_) / dx_;
+        DataType y0 = (1.0 - tx) * data_[i][j] + tx * data_[i][j + 1];
+        DataType y1 = (1.0 - tx) * data_[i + 1][j] + tx * data_[i + 1][j + 1];
+        DataType result = (1.0 - ty) * y0 + ty * y1;
+        std::cout << tx <<", " << ty <<", " << y0 <<", " << y1 << std::endl;
+        return result;
+    }
 
 }
 

@@ -40,7 +40,10 @@ template<typename T>
 vector2d<T>::~vector2d() = default;
 
 template<typename T>
-vector2d<T>::vector2d() : x(0), y(0) {}
+vector2d<T>::vector2d(){
+    x = T{};
+    y = T{};
+}
 
 template<typename T>
 vector2d<T>::vector2d(T x_, T y_) : x(x_), y(y_) {

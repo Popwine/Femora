@@ -151,10 +151,20 @@ void test_UniformField(){
     field.setValue(4,4,9.01);
     field.setValue(1,2,9.36);
     field.setValue(3,1,8.8);
+    std::cout << "field: " << std::endl;
     field.print();
 
-    auto partialDerivativeX = field.laplace();
+    auto partialDerivativeX = field.partialDerivativeX();
+    std::cout << "field partial x: " << std::endl;
     partialDerivativeX.print();
+
+    auto partialDerivativeY = field.partialDerivativeY();
+    std::cout << "field partial Y: " << std::endl;
+    partialDerivativeY.print();
+
+    auto laplace = field.laplace();
+    std::cout << "field laplace: " << std::endl;
+    laplace.print();
 
     Femora::vector2d<real> vec(1.2, 2.3);
     Femora::UniformField<Femora::vector2d<real>> vectorField(5, 5, 0.1, vec);
@@ -165,10 +175,22 @@ void test_UniformField(){
     vectorField.setValue(3,0,Femora::vector2d<real>(0.7,1.8));
     vectorField.setValue(4,1,Femora::vector2d<real>(1.1,0.5));
     vectorField.setValue(2,4,Femora::vector2d<real>(1.3,0.6));
+    std::cout << "vectorField: " << std::endl;
     vectorField.print();
+
     auto divegence = Femora::divergence(vectorField);
+    std::cout << "vectorField divergence: " << std::endl;
     divegence.print();
 
+    auto gradient = field.gradient();
+    std::cout << "field gradient: " << std::endl;
+    gradient.print();
+
+    auto curl_2d = Femora::curl_2d(vectorField);
+    std::cout << "vectorField curl_2d: " << std::endl;
+    curl_2d.print();
+    std::cout << "interpolate value 0.15, 0.25: " << std::endl;
+    std::cout << field.interpolateValue(0.16, 0.26) << std::endl;
 
 
 }
