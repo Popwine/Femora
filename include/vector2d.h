@@ -68,6 +68,10 @@ template<typename T>
 vector2d<T> vector2d<T>::operator*(T scalar) const{
     return vector2d<T>(x * scalar, y * scalar);
 }
+template<typename T>
+vector2d<T> operator*(T scalar, const vector2d<T>& v){
+    return v * scalar;
+}
 
 template<typename T>
 vector2d<T> vector2d<T>::operator/(T scalar) const{

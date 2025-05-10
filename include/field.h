@@ -87,11 +87,16 @@ private:
     size_t width_;//宽度方向的网格数
     size_t height_;//高度方向的网格数
     real dx_;//正方形网格大小
+    real domainSizeX_;
+    real domainSizeY_;
+
     std::vector<std::vector<DataType>> data_;
 public:
     size_t getWidth() const{return width_;};
     size_t getHeight() const{return height_;};
     real getDx() const{return dx_;};
+    real getDomainSizeX() const{return domainSizeX_;};
+    real getDomainSizeY() const{return domainSizeY_;};
     UniformField(const size_t w, const size_t h, const real dx, const DataType& Value);
     
     const DataType& getValue(size_t i, size_t j) const;
@@ -121,7 +126,9 @@ UniformField<DataType>::UniformField(
     width_(w), 
     height_(h),
     dx_(dx)
-    {
+{
+    domainSizeX_ = (w - 1) * dx;
+    domainSizeY_ = (h - 1) * dx;
     //规定行的个数（height_）
     data_.resize(h);
     for(auto& row : data_){
@@ -236,25 +243,67 @@ UniformField<vector2d<DataType>> UniformField<DataType>::gradient() const{
 
 template<typename DataType>
 DataType UniformField<DataType>::interpolateValue(real x, real y)const{
-    int i = std::floor(y / dx_);
-    int j = std::floor(x / dx_);
-    
-    if(i < 0 || j < 0 || i >= (int)(height_ - 1) || j >= (int)(width_ - 1)){
+    //浮点数索引
+    real x_idx_float = x / dx_;
+    real y_idx_float = y / dx_;
+
+    //整数索引
+    int j = std::floor(x_idx_float);
+    int i = std::floor(y_idx_float);
+    if (j < 0 || i < 0 || j + 1 >= static_cast<int>(width_) || i + 1 >= static_cast<int>(height_)){
         return DataType{};
     }
     else{
-        std::cout << data_[i][j] <<", " << data_[i+1][j] <<", " << data_[i][j+1] <<", " << data_[i+1][j+1] << std::endl;
-        DataType tx = (x - j * dx_) / dx_;
-        DataType ty = (y - i * dx_) / dx_;
-        DataType y0 = (1.0 - tx) * data_[i][j] + tx * data_[i][j + 1];
-        DataType y1 = (1.0 - tx) * data_[i + 1][j] + tx * data_[i + 1][j + 1];
-        DataType result = (1.0 - ty) * y0 + ty * y1;
-        std::cout << tx <<", " << ty <<", " << y0 <<", " << y1 << std::endl;
+        real tx = x_idx_float - j;
+        real ty = y_idx_float - i;
+
+        // 获取单元格四个角点的值
+        const DataType& q11 = data_[i][j];       // 左下
+        const DataType& q21 = data_[i][j+1];     // 右下
+        const DataType& q12 = data_[i+1][j];     // 左上
+        const DataType& q22 = data_[i+1][j+1];   // 右上
+
+        // 在 x 方向进行两次线性插值
+        DataType f_xy1 = (1.0 - tx) * q11 + tx * q21;
+        DataType f_xy2 = (1.0 - tx) * q12 + tx * q22;
+
+        // 在 y 方向对上述结果进行线性插值
+        DataType result = (1.0 - ty) * f_xy1 + ty * f_xy2;
+
         return result;
     }
 
+
 }
 
+template<typename DataType>
+UniformField<DataType> advect(const UniformField<DataType>& field, 
+    const UniformField<vector2d<DataType>>& vectorField, 
+    const real timeStepLength){
+    if(field.getHeight() != vectorField.getHeight()
+        || field.getWidth() != vectorField.getWidth()
+        || field.getDx() != vectorField.getDx()
+    )
+    {
+        throw std::runtime_error("The parameters of field don't match that of vectorField.");
+    }
+   
+    UniformField<DataType> advectedField(field.getWidth(), field.getHeight(), field.getDx(), DataType{});
+    for(size_t i = 0; i < field.getHeight(); i++){
+        for(size_t j = 0; j < field.getWidth(); j++){
+            real backtracedX = j * field.getDx() - timeStepLength * vectorField.getValue(i, j).x;
+            real backtracedY = i * field.getDx() - timeStepLength * vectorField.getValue(i, j).y;
+            if(backtracedX < 0) backtracedX = 0;
+            if(backtracedY < 0) backtracedY = 0;
+            if(backtracedX > field.getDomainSizeX()) backtracedX = field.getDomainSizeX();
+            if(backtracedY > field.getDomainSizeY()) backtracedY = field.getDomainSizeY();
+            DataType backtracedValue = field.interpolateValue(backtracedX, backtracedY);
+            advectedField.setValue(i, j, backtracedValue);
+        }
+    }
+    return advectedField;
+    
+}
 
 
 }

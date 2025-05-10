@@ -56,7 +56,7 @@ void test_mesh_and_field(){
 }
 
 int testCsr(){
-        // --- 1. 手动创建一个已知的稀疏矩阵 A (CSR 格式) ---
+    // --- 1. 手动创建一个已知的稀疏矩阵 A (CSR 格式) ---
     // 假设我们要表示以下 4x4 矩阵 A:
     //   [ 5  0 -1  0 ]
     //   [ 0  2  0  3 ]
@@ -190,7 +190,11 @@ void test_UniformField(){
     std::cout << "vectorField curl_2d: " << std::endl;
     curl_2d.print();
     std::cout << "interpolate value 0.15, 0.25: " << std::endl;
-    std::cout << field.interpolateValue(0.16, 0.26) << std::endl;
+    std::cout << field.interpolateValue(0.19, 0.29) << std::endl;
+
+    Femora::UniformField<real> advected_field = Femora::advect(field, vectorField, 0.001);
+    std::cout << "advected_field: " << std::endl;
+    advected_field.print();
 
 
 }
